@@ -1,0 +1,33 @@
+﻿@model CaseManagement.Models.Adalot
+
+@{
+    ViewData["Title"] = "Edit Adalot";
+}
+
+<h2>Edit Adalot</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-2">
+        <label asp-for="Location" class="control-label">Location</label>
+        <select asp-for="Location" class="form-control">
+            <option value="Dhaka">Dhaka (DhakaDB)</option>
+            <option value="Barishal">Barishal (BarishalDB)</option>
+        </select>
+        <span asp-validation-for="Location" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Update</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Back to List</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

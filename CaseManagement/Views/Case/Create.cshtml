@@ -1,0 +1,42 @@
+﻿@model CaseManagement.Models.Case
+
+@{
+    ViewData["Title"] = "Create Case";
+}
+
+<h2>Create New Case</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="CaseName" class="control-label"></label>
+        <input asp-for="CaseName" class="form-control" />
+        <span asp-validation-for="CaseName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CaseType" class="control-label">Case Type</label>
+        <select asp-for="CaseType" class="form-control">
+            <option value="">-- Select Case Type --</option>
+            <option value="MurderCase">MurderCase (DhakaDB)</option>
+            <option value="Churi">Churi (BarishalDB)</option>
+        </select>
+        <span asp-validation-for="CaseType" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FiledDate" class="control-label">Filed Date</label>
+        <input asp-for="FiledDate" type="date" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Save</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Back to List</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

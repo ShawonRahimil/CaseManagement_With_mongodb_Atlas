@@ -1,0 +1,34 @@
+﻿@model IEnumerable<CaseManagement.Models.Adalot>
+
+@{
+    ViewData["Title"] = "Adalot List";
+}
+
+<h2>Adalot List</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Adalot</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Location</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" asp-route-location="@item.Location" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" asp-route-location="@item.Location" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
