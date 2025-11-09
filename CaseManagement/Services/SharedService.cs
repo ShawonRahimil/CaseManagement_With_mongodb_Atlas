@@ -20,30 +20,24 @@ namespace CaseManagement.Services
             _barishalDb = barishalClient.GetDatabase(settings.BarishalDb.DatabaseName);
         }
 
-        // CaseType অনুযায়ী Collection
-        public IMongoCollection<T> GetCaseCollection<T>(string caseType) where T : class
-        {
-            if (!string.IsNullOrEmpty(caseType))
-            {
-                var type = caseType.ToLower();
-                if (type.Contains("murder"))
-                    return _dhakaDb.GetCollection<T>(typeof(T).Name);
-                else if (type.Contains("churi"))
-                    return _barishalDb.GetCollection<T>(typeof(T).Name);
-            }
-            return _dhakaDb.GetCollection<T>(typeof(T).Name);
-        }
-
-        // Adalot Location অনুযায়ী Collection
         public IMongoCollection<T> GetAdalotCollection<T>(string location) where T : class
         {
             if (!string.IsNullOrEmpty(location))
             {
                 var loc = location.ToLower();
-                if (loc == "dhaka")
-                    return _dhakaDb.GetCollection<T>(typeof(T).Name);
-                else if (loc == "barishal")
-                    return _barishalDb.GetCollection<T>(typeof(T).Name);
+                if (loc == "dhaka") return _dhakaDb.GetCollection<T>(typeof(T).Name);
+                else if (loc == "barishal") return _barishalDb.GetCollection<T>(typeof(T).Name);
+            }
+            return _dhakaDb.GetCollection<T>(typeof(T).Name);
+        }
+
+        public IMongoCollection<T> GetCaseCollection<T>(string caseType) where T : class
+        {
+            if (!string.IsNullOrEmpty(caseType))
+            {
+                var type = caseType.ToLower();
+                if (type.Contains("murder")) return _dhakaDb.GetCollection<T>(typeof(T).Name);
+                else if (type.Contains("churi")) return _barishalDb.GetCollection<T>(typeof(T).Name);
             }
             return _dhakaDb.GetCollection<T>(typeof(T).Name);
         }

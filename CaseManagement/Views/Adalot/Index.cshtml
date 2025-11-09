@@ -1,34 +1,81 @@
 ﻿@model IEnumerable<CaseManagement.Models.Adalot>
 
 @{
-    ViewData["Title"] = "Adalot List";
+    ViewData["Title"] = "All Adalots";
 }
 
-<h2>Adalot List</h2>
+<h3>Barishal Adalots</h3>
+@{
+    var barishalAdalots = Model.Where(a => a.Location.ToLower() == "barishal").ToList();
+}
+@if (!barishalAdalots.Any())
+{
+    <p class="text-warning">No Barishal Adalots found.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped table-hover align-middle">
+        <thead class="table-light text-center">
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th style="width: 180px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in barishalAdalots)
+            {
+                <tr class="text-center">
+                    <td>@item.Name</td>
+                    <td>@item.Location</td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id" asp-route-location="@item.Location">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<h3>Dhaka Adalots</h3>
+@{
+    var dhakaAdalots = Model.Where(a => a.Location.ToLower() == "dhaka").ToList();
+}
+@if (!dhakaAdalots.Any())
+{
+    <p class="text-warning">No Dhaka Adalots found.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped table-hover align-middle">
+        <thead class="table-light text-center">
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th style="width: 180px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in dhakaAdalots)
+            {
+                <tr class="text-center">
+                    <td>@item.Name</td>
+                    <td>@item.Location</td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id" asp-route-location="@item.Location">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Add New Adalot</a>
+    <a class="btn btn-success" asp-action="Create">Create New Adalot</a>
 </p>
-
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>Name</th>
-            <th>Location</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Name</td>
-                <td>@item.Location</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" asp-route-location="@item.Location" class="btn btn-warning btn-sm">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" asp-route-location="@item.Location" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>

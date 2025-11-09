@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using CaseManagement.Models;
+﻿using CaseManagement.Models;
 using CaseManagement.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace CaseManagement.Controllers
 {
+    [Authorize]
     public class CaseController : Controller
     {
         private readonly CaseService _caseService;
@@ -14,17 +17,14 @@ namespace CaseManagement.Controllers
         }
 
         // GET: Case
-        public IActionResult Index(string caseType)
+        public IActionResult Index()
         {
-            var cases = _caseService.GetAll(caseType ?? "");
+            var cases = _caseService.GetAll();
             return View(cases);
         }
 
         // GET: Case/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         // POST: Case/Create
         [HttpPost]
@@ -40,10 +40,9 @@ namespace CaseManagement.Controllers
         }
 
         // GET: Case/Edit/5
-        public IActionResult Edit(string id, string caseType)
+        public IActionResult Edit(string id)
         {
-            var caseList = _caseService.GetAll(caseType ?? "");
-            var caseItem = caseList.FirstOrDefault(c => c.Id == id);
+            var caseItem = _caseService.GetAll().FirstOrDefault(c => c.Id == id);
             if (caseItem == null) return NotFound();
             return View(caseItem);
         }
@@ -62,10 +61,9 @@ namespace CaseManagement.Controllers
         }
 
         // GET: Case/Delete/5
-        public IActionResult Delete(string id, string caseType)
+        public IActionResult Delete(string id)
         {
-            var caseList = _caseService.GetAll(caseType ?? "");
-            var caseItem = caseList.FirstOrDefault(c => c.Id == id);
+            var caseItem = _caseService.GetAll().FirstOrDefault(c => c.Id == id);
             if (caseItem == null) return NotFound();
             return View(caseItem);
         }

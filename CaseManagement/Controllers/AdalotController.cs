@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using CaseManagement.Models;
+﻿using CaseManagement.Models;
 using CaseManagement.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace CaseManagement.Controllers
 {
+    [Authorize]
     public class AdalotController : Controller
     {
         private readonly AdalotService _adalotService;
@@ -14,17 +17,14 @@ namespace CaseManagement.Controllers
         }
 
         // GET: Adalot
-        public IActionResult Index(string location)
+        public IActionResult Index()
         {
-            var adalots = _adalotService.GetAll(location ?? "");
+            var adalots = _adalotService.GetAll();
             return View(adalots);
         }
 
         // GET: Adalot/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         // POST: Adalot/Create
         [HttpPost]
@@ -40,10 +40,9 @@ namespace CaseManagement.Controllers
         }
 
         // GET: Adalot/Edit/5
-        public IActionResult Edit(string id, string location)
+        public IActionResult Edit(string id)
         {
-            var adalots = _adalotService.GetAll(location ?? "");
-            var adalot = adalots.FirstOrDefault(a => a.Id == id);
+            var adalot = _adalotService.GetAll().FirstOrDefault(a => a.Id == id);
             if (adalot == null) return NotFound();
             return View(adalot);
         }
@@ -62,10 +61,9 @@ namespace CaseManagement.Controllers
         }
 
         // GET: Adalot/Delete/5
-        public IActionResult Delete(string id, string location)
+        public IActionResult Delete(string id)
         {
-            var adalots = _adalotService.GetAll(location ?? "");
-            var adalot = adalots.FirstOrDefault(a => a.Id == id);
+            var adalot = _adalotService.GetAll().FirstOrDefault(a => a.Id == id);
             if (adalot == null) return NotFound();
             return View(adalot);
         }

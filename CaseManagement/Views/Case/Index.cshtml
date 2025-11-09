@@ -1,38 +1,80 @@
 ﻿@model IEnumerable<CaseManagement.Models.Case>
 
 @{
-    ViewData["Title"] = "Case List";
+    ViewData["Title"] = "All Cases";
 }
 
-<h2>All Cases</h2>
+<h3>Murder Cases (Dhaka)</h3>
+@{
+    var murderCases = Model.Where(c => c.CaseType.ToLower().Contains("murder")).ToList();
+}
+@if (!murderCases.Any())
+{
+    <p class="text-warning">No Murder cases found.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Case Name</th>
+                <th>Case Type</th>
+                <th>Adalot / Location</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in murderCases)
+            {
+                <tr>
+                    <td>@item.CaseName</td>
+                    <td>@item.CaseType</td>
+                    <td>Dhaka</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id" asp-route-caseType="@item.CaseType">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<h3>Churi Cases (Barishal)</h3>
+@{
+    var churiCases = Model.Where(c => c.CaseType.ToLower().Contains("churi")).ToList();
+}
+@if (!churiCases.Any())
+{
+    <p class="text-warning">No Churi cases found.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Case Name</th>
+                <th>Case Type</th>
+                <th>Adalot / Location</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in churiCases)
+            {
+                <tr>
+                    <td>@item.CaseName</td>
+                    <td>@item.CaseType</td>
+                    <td>Barishal</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id" asp-route-caseType="@item.CaseType">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Add New Case</a>
+    <a class="btn btn-success" asp-action="Create">Create New Case</a>
 </p>
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Case Name</th>
-            <th>Case Type</th>
-            <th>Description</th>
-            <th>Filed Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.CaseName</td>
-                <td>@item.CaseType</td>
-                <td>@item.Description</td>
-                <td>@item.FiledDate.ToString("yyyy-MM-dd")</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" asp-route-caseType="@item.CaseType" class="btn btn-warning btn-sm">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" asp-route-caseType="@item.CaseType" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>

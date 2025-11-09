@@ -3,81 +3,362 @@
 
 @{
     ViewData["Title"] = "Log in";
+    // Define custom color variables for gradients
+    var mainGradient = "linear-gradient(135deg, #a770ef, #cf8bf3, #fdb99b)";
+    var buttonGradient = "linear-gradient(to right, #ac75f7, #e491ee)";
+    // Setting Layout to null is common for full-page login screens,
+    // but if you want the site's default layout, you should remove this line.
+    // I'll keep it as null assuming this is a standalone identity page.
+    Layout = null;
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <form id="account" method="post">
-                <h2>Use a local account to log in.</h2>
-                <hr />
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label asp-for="Input.Email" class="form-label">Email</label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Case Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        /* ======================================= */
+        /* --- CUSTOM CSS TO MATCH IMAGE DESIGN --- */
+        /* ======================================= */
+
+        body {
+            background: #f7f7f7; /* Light background for the whole page */
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding-top: 70px; /* Space for the fixed Navbar */
+        }
+
+        /* Container to center the login box in the remaining screen area */
+        .main-content-wrapper {
+            /* The height is calculated: 100% of viewport height minus the navbar height (70px) */
+            min-height: calc(100vh - 70px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* The overall box containing the gradient panel and the form */
+        .login-container {
+            display: flex;
+            width: 90%;
+            max-width: 900px;
+            min-height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* The left panel with the welcome message and background design */
+        .welcome-panel {
+            flex: 1;
+            padding: 3rem;
+            color: white;
+            background: @mainGradient;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Abstract shapes container */
+        .abstract-shapes {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        /* Style for the slanting, orange abstract lines */
+        .abstract-shape {
+            position: absolute;
+            transform: rotate(-45deg);
+            opacity: 0.7;
+            border-radius: 5px; /* Added slight rounding to shapes */
+        }
+
+        /* Positioning and coloring of the shapes */
+        .shape-1 {
+            background: linear-gradient(45deg, #ff8a00, #e95959);
+            width: 150px;
+            height: 30px;
+            bottom: 50px;
+            left: 10%;
+            opacity: 1;
+        }
+
+        .shape-2 {
+            background: linear-gradient(45deg, #ff8a00, #e95959);
+            width: 120px;
+            height: 25px;
+            bottom: 100px;
+            left: 20%;
+            opacity: 0.8;
+        }
+
+        .shape-3 {
+            background: linear-gradient(45deg, #ff8a00, #e95959);
+            width: 80px;
+            height: 20px;
+            bottom: 150px;
+            left: 30%;
+            opacity: 0.6;
+        }
+
+        .shape-4 {
+            background: linear-gradient(45deg, #ff8a00, #e95959);
+            width: 60px;
+            height: 15px;
+            bottom: 200px;
+            left: 40%;
+            opacity: 0.4;
+        }
+
+        .shape-5 {
+            background: linear-gradient(45deg, #ff8a00, #e95959);
+            width: 180px;
+            height: 35px;
+            top: 10%;
+            right: 5%;
+            opacity: 0.5;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+            .welcome-content h1 {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+                font-weight: 600;
+            }
+
+            .welcome-content p {
+                font-size: 1rem;
+                line-height: 1.5;
+                max-width: 80%;
+            }
+
+        /* The right panel with the login form */
+        .login-form-panel {
+            background: white;
+            padding: 3rem;
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .login-form-panel h2 {
+                text-align: center;
+                margin-bottom: 2rem;
+                color: #ac75f7;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-size: 1.2rem;
+                font-weight: 600;
+            }
+
+        /* Custom styling for the inputs to add the icons */
+        .input-icon-group {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+            .input-icon-group i {
+                position: absolute;
+                top: 50%;
+                left: 10px;
+                transform: translateY(-50%);
+                color: #ac75f7;
+                z-index: 5;
+            }
+
+        .form-control {
+            border-radius: 20px;
+            padding-left: 35px;
+            height: 45px;
+            border: 1px solid #ddd;
+        }
+
+        .form-floating > label {
+            display: none;
+        }
+
+        .form-control:focus {
+            border-color: #ac75f7;
+            box-shadow: 0 0 0 0.2rem rgba(172, 117, 247, 0.25);
+        }
+
+        /* Login button styling (gradient) */
+        .btn-primary {
+            background: @buttonGradient;
+            border: none;
+            border-radius: 20px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                opacity: 0.9;
+                background: @buttonGradient;
+            }
+
+        /* Remember Me & Forgot Password area */
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+            .login-options a {
+                color: #ac75f7;
+                text-decoration: none;
+                font-size: 0.9rem;
+            }
+
+        .text-center a {
+            color: #ac75f7;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+            .login-options a:hover, .text-center a:hover {
+                text-decoration: underline;
+            }
+
+        /* Adjust for smaller screens (mobile view) */
+        @@media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                width: 100%;
+                max-width: 100%;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .welcome-panel {
+                display: none;
+            }
+
+            .login-form-panel {
+                width: 100%;
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); height: 70px;">
+        <div class="container-fluid">
+            <a class="navbar-brand ms-3" href="#" style="color: #ac75f7; font-weight: bold; font-size: 1.5rem;">Case Management</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content-wrapper">
+        <div class="login-container">
+            <div class="welcome-panel">
+                <div class="abstract-shapes">
+                    <div class="abstract-shape shape-1"></div>
+                    <div class="abstract-shape shape-2"></div>
+                    <div class="abstract-shape shape-3"></div>
+                    <div class="abstract-shape shape-4"></div>
+                    <div class="abstract-shape shape-5"></div>
                 </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="form-label">Password</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
-                <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="Input.RememberMe" />
-                        @Html.DisplayNameFor(m => m.Input.RememberMe)
-                    </label>
-                </div>
-                <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div>
+                <div class="welcome-content">
+                    <h1>Welcome to website</h1>
                     <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod
+                        tincidunt ut laoreet dolore magna aliquam erat volutpat.
                     </p>
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+                    <p class="mt-4" style="font-size: 0.8rem; opacity: 0.7;">
+                        designed by &hearts; freepik
                     </p>
                 </div>
-            </form>
-        </section>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
+            </div>
+
+            <div class="login-form-panel">
+                <div style="width: 100%; max-width: 300px;">
+                    <h2>User Login</h2>
+
+                    <form id="account" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                        <div class="input-icon-group">
+                            <i class="bi bi-person"></i>
+                            <input asp-for="Input.Email" class="form-control" placeholder="Email" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="input-icon-group">
+                            <i class="bi bi-lock"></i>
+                            <input asp-for="Input.Password" class="form-control" placeholder="Password" />
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="login-options">
+                            <div class="form-check">
+                                <input class="form-check-input" asp-for="Input.RememberMe" type="checkbox" style="border-radius: 5px;" />
+                                <label class="form-check-label" asp-for="Input.RememberMe" style="font-size: 0.9rem;">Remember</label>
+                            </div>
+                            <div>
+                                <a asp-page="./ForgotPassword">Forgot password?</a>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mb-4">LOGIN</button>
+
+                        <div class="text-center">
                             <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
+                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                            </p>
+                            <p>
+                                <a asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
                             </p>
                         </div>
                     </form>
-                }
-            }
-        </section>
-    </div>
-</div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+                    @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+                    {
+                        <hr style="border-color: #f0f0f0;" />
+                        <div class="text-center">
+                            <h5 style="color: #333; font-size: 1rem; margin-bottom: 1rem;">Or log in with</h5>
+                            <div class="external-login">
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <form asp-page="./ExternalLogin" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-primary" name="provider" value="@provider.Name" style="border-color: #ac75f7; color: #ac75f7; border-radius: 20px;">
+                                            @provider.DisplayName
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
