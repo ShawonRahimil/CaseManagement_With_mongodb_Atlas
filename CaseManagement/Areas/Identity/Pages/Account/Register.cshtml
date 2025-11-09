@@ -1,64 +1,414 @@
 ﻿@page
 @model RegisterModel
+
 @{
     ViewData["Title"] = "Register";
+    // Set variables for the main gradient colors
+    var mainGradient = "linear-gradient(135deg, #a770ef, #cf8bf3, #fdb99b)";
+    var buttonGradient = "linear-gradient(to right, #ac75f7, #e491ee)";
+    // Setting Layout to null as we are defining the full structure including the navbar
+    Layout = null;
 }
 
-<h1>@ViewData["Title"]</h1>
+<style>
+    /* * --- GLOBAL & LAYOUT STYLES (MODIFIED FOR NAVBAR) ---
+         */
 
-<div class="row">
-    <div class="col-md-4">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
-            <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
+    body {
+        background: #f7f7f7;
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+    }
+
+    /* Wrapper to center the register box below the navbar */
+    .main-content-wrapper {
+        /* Calculates remaining height, assuming navbar height is 70px */
+        min-height: calc(100vh - 70px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    /* Custom style for the Log in button in the navbar (Kept for other uses if needed, though removed from HTML) */
+    .navbar-login-btn {
+        color: #ac75f7 !important;
+        border: 2px solid #ac75f7;
+        border-radius: 20px; /* Rounded corners */
+        padding: 0.3rem 1rem !important;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-left: 15px; /* Space from other elements if any */
+    }
+
+        .navbar-login-btn:hover {
+            background: #ac75f7;
+            color: white !important;
+            text-decoration: none;
+        }
+
+    /* *** ADDED/MODIFIED: Remove underline from Case Management brand name *** */
+    .navbar-brand {
+        text-decoration: none !important;
+    }
+    /* ******************************************************************* */
+
+
+    /* Container for the whole screen (left panel + right form) */
+    .register-container {
+        display: flex;
+        width: 90%;
+        max-width: 900px;
+        min-height: 500px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* The left panel with the welcome message and background design */
+    .welcome-panel {
+        flex: 1;
+        padding: 3rem;
+        color: white;
+        background: @mainGradient; /* Using the custom gradient variable */
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Abstract shapes mimicking the image's background design */
+    .abstract-shapes {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+    }
+
+    .abstract-shape {
+        position: absolute;
+        border-radius: 50px;
+        transform: rotate(-45deg);
+        opacity: 0.7;
+    }
+
+    /* Positioning and coloring of the shapes (Adjusted to match the style) */
+    .shape-1 {
+        background: linear-gradient(45deg, #ff8a00, #e95959);
+        width: 150px;
+        height: 30px;
+        bottom: 50px;
+        left: 10%;
+        opacity: 1;
+    }
+
+    .shape-2 {
+        background: linear-gradient(45deg, #ff8a00, #e95959);
+        width: 120px;
+        height: 25px;
+        bottom: 100px;
+        left: 20%;
+        opacity: 0.8;
+    }
+
+    .shape-3 {
+        background: linear-gradient(45deg, #ff8a00, #e95959);
+        width: 80px;
+        height: 20px;
+        bottom: 150px;
+        left: 30%;
+        opacity: 0.6;
+    }
+
+    .shape-4 {
+        background: linear-gradient(45deg, #ff8a00, #e95959);
+        width: 60px;
+        height: 15px;
+        bottom: 200px;
+        left: 40%;
+        opacity: 0.4;
+    }
+
+    .shape-5 {
+        background: linear-gradient(45deg, #ff8a00, #e95959);
+        width: 180px;
+        height: 35px;
+        top: 10%;
+        right: 5%;
+        opacity: 0.5;
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 1;
+    }
+
+        .welcome-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .welcome-content p {
+            font-size: 1rem;
+            line-height: 1.5;
+            max-width: 80%;
+        }
+
+    /* The right panel with the registration form */
+    .register-form-panel {
+        background: white;
+        padding: 3rem;
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .register-form-panel h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #ac75f7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+    /* Form input styling (rounded) */
+    .form-control {
+        border-radius: 20px;
+        padding-left: 35px;
+        height: 45px;
+        border: 1px solid #ddd;
+        /* Custom adjustment to make border lighter for the login/register design */
+    }
+
+    .form-floating > label {
+        padding-left: 35px !important;
+        font-size: 0.9rem;
+        /* Subtle color change to match design feel */
+        color: #ac75f7;
+    }
+
+    /* Custom styling for the inputs to add the icons */
+    .input-icon-group {
+        position: relative;
+        margin-bottom: 1.5rem; /* Increased spacing */
+    }
+
+        .input-icon-group i {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            color: #ac75f7; /* Icon color */
+            z-index: 5;
+            font-size: 1.1rem; /* Slightly larger icon */
+        }
+
+    .form-control:focus {
+        border-color: #ac75f7;
+        box-shadow: 0 0 0 0.2rem rgba(172, 117, 247, 0.25);
+    }
+
+    /* Register button styling (gradient) */
+    .btn-primary {
+        background: @buttonGradient;
+        border: none;
+        border-radius: 20px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: opacity 0.3s ease;
+        text-transform: uppercase;
+    }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            background: @buttonGradient;
+        }
+
+    /* Style for the link below the register button */
+    .login-redirect-link {
+        display: block;
+        margin-top: 15px;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+        .login-redirect-link a {
+            color: #ac75f7;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .login-redirect-link a:hover {
+                text-decoration: underline;
             }
-        </section>
+
+    /* External login area styling */
+    #external-account {
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+        #external-account h3 {
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* External login buttons */
+        #external-account .btn-primary {
+            background: white;
+            color: #ac75f7;
+            border: 1px solid #ac75f7;
+            padding: 0.5rem 1.5rem;
+            margin: 0.25rem;
+            border-radius: 20px;
+            font-weight: normal;
+            transition: all 0.3s ease;
+        }
+
+    .btn-primary:hover {
+        background: #ac75f7;
+        color: white;
+        opacity: 1;
+    }
+
+    /* Adjust for smaller screens (mobile view) */
+    @@media (max-width: 768px) {
+        .register-container {
+            flex-direction: column;
+            width: 100%;
+            max-width: 100%;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .welcome-panel {
+            display: none;
+        }
+
+        .register-form-panel {
+            width: 100%;
+            padding: 2rem;
+        }
+
+        .main-content-wrapper {
+            min-height: calc(100vh - 70px);
+            padding: 0;
+        }
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); height: 70px;">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#" style="color: #ac75f7; font-weight: bold; font-size: 1.5rem;">Case Management</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                @* <li class="nav-item">
+                    <a class="nav-link navbar-login-btn" asp-page="./Login">Log in</a>
+                </li> *@
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="main-content-wrapper">
+    <div class="register-container">
+
+        <div class="welcome-panel">
+            <div class="abstract-shapes">
+                <div class="abstract-shape shape-1"></div>
+                <div class="abstract-shape shape-2"></div>
+                <div class="abstract-shape shape-3"></div>
+                <div class="abstract-shape shape-4"></div>
+                <div class="abstract-shape shape-5"></div>
+            </div>
+            <div class="welcome-content">
+                <h1>Register Today</h1>
+                <p>
+                    Join us to access all the powerful features of our Case Management system. Secure and fast registration.
+                </p>
+                <p class="mt-4" style="font-size: 0.8rem; opacity: 0.7;">
+                    (Design inspired by freepik)
+                </p>
+            </div>
+        </div>
+
+        <div class="register-form-panel">
+            <div style="width: 100%; max-width: 300px;">
+                <h2>@ViewData["Title"]</h2>
+
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                    <div class="input-icon-group">
+                        <i class="bi bi-envelope"></i> <div class="form-floating">
+                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                            <label asp-for="Input.Email">Email</label>
+                        </div>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-icon-group">
+                        <i class="bi bi-lock"></i>
+                        <div class="form-floating">
+                            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                            <label asp-for="Input.Password">Password</label>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-icon-group">
+                        <i class="bi bi-lock-fill"></i>
+                        <div class="form-floating">
+                            <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                            <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                        </div>
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                    <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary mt-3">REGISTER</button>
+                </form>
+
+                <div class="login-redirect-link">
+                    Already registered? <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Log in here.</a>
+                </div>
+
+
+                @{
+                    if ((Model.ExternalLogins?.Count ?? 0) > 0)
+                    {
+                        <hr style="border-color: #f0f0f0; margin: 2rem 0 1rem 0;" />
+                        <section id="external-account">
+                            <h3>Or register with</h3>
+
+                            <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                <div>
+                                    @foreach (var provider in Model.ExternalLogins!)
+                                    {
+                                        <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Register using your @provider.DisplayName account">@provider.DisplayName</button>
+                                    }
+                                </div>
+                            </form>
+                        </section>
+                    }
+                }
+
+            </div>
+        </div>
     </div>
 </div>
 
